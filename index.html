@@ -96,7 +96,7 @@ td,th{border-bottom:1px solid #f1f5f9;padding:6px 4px;text-align:left;vertical-a
 </section>
 
 <section id="tab-around" hidden>
-  <div class="card note"><h3>🏨 빈펄 엠파이어 주변</h3><p>호텔 도보 1~3분 거리에 있는 마트, 카페, 맛집, 편의점 위치입니다.</p></div>
+  <div class="card note"><h3>🏨 빈펄 엠파이어 주변 탐방</h3><p>호텔(빈컴 플라자 건물) 도보 1~5분 거리의 마트, 과일가게, 카페, 로컬 맛집 모음입니다.</p></div>
   <div id="aroundList" style="display:grid;gap:14px"></div>
 </section>
 
@@ -264,7 +264,7 @@ $('#pickupModal').addEventListener('click', e => { if(e.target === $('#pickupMod
 const DAYS=[
 {n:'0일차',iso:'2026-11-03',date:'11월 3일 (화)',tag:'출국 & 체크인',it:[
  ['17:00','인천공항 도착 · 탑승수속',0],
- ['20:10','인천공항 출발 (TW33) <a href="https://www.twayair.com/app/service/webCheckin" target="_blank" rel="noopener" style="font-size:11px;background:#e0f2fe;padding:2px 6px;border-radius:4px;margin-left:4px">✈️ 24시간 전 웹체크인</a>'],
+ ['20:10','인천공항 출발 (TW33) <a href="https://www.trinityairways.com/app/reservation/searchCheckinItinerary" target="_blank" rel="noopener" style="font-size:11px;background:#e0f2fe;padding:2px 6px;border-radius:4px;margin-left:4px">✈️ 트리니티 24시간 전 체크인</a>'],
  ['23:55','깜란공항 도착 → 입국심사',0],
  ['심야','공항 픽업 탑승 (5번 기둥 미팅)'],
  ['새벽','호텔 체크인 · 휴식']]},
@@ -289,22 +289,37 @@ const DAYS=[
  ['08:30–09:30','호텔 조식'],
  ['09:30–11:30','롯데마트 쇼핑 (위탁수하물 20kg 활용)',[['Lotte Mart Nha Trang','롯데마트 나트랑점']],'오는 편 위탁 20kg / 기내 7kg 한도 준수'],
  ['12:00','호텔 체크아웃 · 짐 보관'],
- ['12:00–13:30','점심',[['Banh Mi Phan Nha Trang','반미 판']]],
+ ['12:00–13:30','점심',[['Banh Mi Phan Nha Trang','Banh Mi Phan','반미']]],
  ['13:30–15:00','오션뷰 카페',[['Lv8 Lounge Rooftop Nha Trang','Lv8 Lounge & Rooftop']]],
  ['15:00–17:00','마무리 스파',[['Go Tee Spa Nha Trang','고트리 스파','가성비 좋은 로컬 스파']]],
  ['17:00–18:30','마지막 만찬 🍻',[['Quan Minh Nha Trang','Quan Minh']]],
  ['18:40','호텔 짐 픽업 · 그랩 탑승'],
  ['19:30','깜란공항 도착 · VJ834 수속'],
- ['22:45','나트랑 출발 (VJ834) <a href="https://www.vietjetair.com/ko/checkin" target="_blank" rel="noopener" style="font-size:11px;background:#e0f2fe;padding:2px 6px;border-radius:4px;margin-left:4px">✈️ 24시간 전 웹체크인</a>'],
+ ['22:45','나트랑 출발 (VJ834) <a href="https://www.vietjetair.com/ko/checkin" target="_blank" rel="noopener" style="font-size:11px;background:#e0f2fe;padding:2px 6px;border-radius:4px;margin-left:4px">✈️ 비엣젯 24시간 전 웹체크인</a>'],
  ['11/7 05:35','인천 도착',0]]}
 ];
 const today=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Ho_Chi_Minh'}).format(new Date());
 $('#days').innerHTML=DAYS.map(d=>`<article class="card day${d.iso===today?' today':''}"><header><b class="badge">${d.n}</b><h2 style="margin:0">${d.date}${d.iso===today?' · 오늘':''}</h2><span>${d.tag}</span></header><ol class="tl">${d.it.map(i=>`<li><time>${i[0]}</time>${i[1]}${i[3]?`<span class="s">${i[3]}</span>`:''}${i[2]?opts(i[2]):''}</li>`).join('')}</ol></article>`).join('');
 
+/* 호텔 주변 탭 정보 풍성하게 확장 */
 const AROUND=[
-['🍎 과일가게 · 마트',[['Vincom Plaza Nha Trang','WinMart (호텔 지하 1층)','컷팅 과일·음료'],['Fruit Shop Nha Trang Center','시내 로컬 과일가게','망고 생과일']]],
-['☕ 카페',[['CCCP COFFEE Nha Trang','CCCP COFFEE','코코넛 커피'],['Cong Caphe Nha Trang','콩카페','빈티지 감성']]],
-['🍜 로컬 맛집',[['Pho Hong Nha Trang','퍼 홍','쌀국수'],['Banh Mi Phan Nha Trang','반미 판','반미']]]];
+['🍎 마트 · 과일가게', [
+  ['Vincom Plaza Nha Trang', 'WinMart (호텔 지하 1층)', '대형마트, 신선 과일, 음료, 생필품'],
+  ['Nha Trang Center Fruit Stalls', '냐짱센터 지하/1층 과일 코너', '망고, 애플망고, 컷팅 과일 포장'],
+  ['Cho Xom Moi Fruit Vendors', '쭘모이 시장 과일 골목', '현지 로컬 가성비 과일 (도보 7분)']
+]],
+['☕ 인기 카페', [
+  ['CCCP COFFEE Nha Trang', 'CCCP COFFEE', '코코넛 커피 및 스무디 맛집 (도보 2분)'],
+  ['Cong Caphe Nha Trang', '콩카페 (빈컴점 인근)', '베트남 빈티지 감성 연유커피'],
+  ['Phe La Vincom Nha Trang', '페라 (Phê La)', '티(Tea) 전문 감성 카페 (호텔 건물 내)'],
+  ['Highlands Coffee Vincom Nha Trang', '하이랜드 커피', '베트남 대표 프랜차이즈 커피 (호텔 건물 내)']
+]],
+['🍜 주변 로컬 맛집', [
+  ['Pho Hong Nha Trang', '퍼 홍 (Pho Hong)', '현지인 및 관광객에게 유명한 쌀국수 맛집'],
+  ['An Thoi Nha Trang', '안토이 (An Thoi)', '반쎄오, 쌀국수, 분짜 등 깔끔한 베트남 가정식'],
+  ['Sum Moi Garden Nha Trang', '씀모이 가든', '분위기 좋은 베트남 전통 요리 레스토랑'],
+  ['Banh Mi Phan Nha Trang', '반미 판 (Banh Mi Phan)', '바삭하고 속이 꽉 찬 인기 반미 전문점']
+]]];
 $('#aroundList').innerHTML=AROUND.map(a=>`<div class="card"><h3>${a[0]}</h3>${opts(a[1])}</div>`).join('');
 
 const SPA_EAR=[
