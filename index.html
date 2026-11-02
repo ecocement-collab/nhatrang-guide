@@ -133,7 +133,7 @@ td,th{border-bottom:1px solid #f1f5f9;padding:6px 4px;text-align:left;vertical-a
     </tbody></table>
     <p>오는 편 비엣젯(VJ834)은 위탁수하물 20kg가 포함되어 있어 롯데마트나 담시장 쇼핑 짐을 여유 있게 부치실 수 있습니다!</p>
   </div>
-  <div class="card note"><div class="row"><span>💾 체크 상태가 이 기기에 저장됩니다.</span><button class="btn" id="ckReset">초기화</button></div><p id="ckProgress" aria-live="polite">준비 완료 0 / 19개</p></div>
+  <div class="card note"><div class="row"><span>💾 체크 상태가 이 기기에 저장됩니다.</span><button class="btn" id="ckReset">초기화</button></div><p id="ckProgress" aria-live="polite">준비 완료 0 / 22개</p></div>
   <div class="card" id="checklist"></div>
 </section>
 
@@ -210,7 +210,6 @@ td,th{border-bottom:1px solid #f1f5f9;padding:6px 4px;text-align:left;vertical-a
   </div>
   <div class="card">
     <h3>💳 카드 · ATM</h3>
-    <p><b>하나 트래블로그</b>: VPBank, TPBank, MSB ATM 인출 수수료 무료</p>
     <p><b>비자/마스터</b>: 그랩 및 시내 가맹점 위주로 사용</p>
   </div>
 </section>
@@ -313,7 +312,7 @@ const DAYS=[
 const today=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Ho_Chi_Minh'}).format(new Date());
 $('#days').innerHTML=DAYS.map(d=>`<article class="card day${d.iso===today?' today':''}"><header><b class="badge">${d.n}</b><h2 style="margin:0">${d.date}${d.iso===today?' · 오늘':''}</h2><span>${d.tag}</span></header><ol class="tl">${d.it.map(i=>`<li><time>${i[0]}</time>${i[1]}${i[3]?`<span class="s">${i[3]}</span>`:''}${i[2]?opts(i[2]):''}</li>`).join('')}</ol></article>`).join('');
 
-/* 호텔 주변 탭 정보 풍성하게 확장 */
+/* 호텔 주변 탭 정보 */
 const AROUND=[
 ['🍎 마트 · 과일가게', [
   ['Vincom Plaza Nha Trang', 'WinMart (호텔 지하 1층)', '대형마트, 신선 과일, 음료, 생필품'],
@@ -347,7 +346,32 @@ const SPA_BODY=[
 $('#spaEarList').innerHTML=opts(SPA_EAR);
 $('#spaBodyList').innerHTML=opts(SPA_BODY);
 
-const CK=[['passport','여권 (유효기간 6개월 이상)'],['etix','항공권 e-티켓 · 호텔 바우처'],['pai','사전입국신고(PAI) QR 캡처'],['bag','수하물 규격 확인 (위탁 20kg / 기내 7kg)'],['cash','환전 ($100 신권 위주)'],['esim','eSIM 신청·등록'],['travelog','하나 트래블로그 카드'],['pickup','공항 픽업 예약'],['grab','Grab 설치·카드 등록'],['ins','여행자보험'],['rain','3단 우산·우비'],['jacket','바람막이'],['shoes','편한 샌들 / 운동화'],['temple','사원 방문 복장'],['swim','수영복'],['pb','보조배터리'],['med','상비약'],['bug','모기기피제'],['liq','액체류 지퍼백']];
+/* 준비물 체크리스트 수정 (수하물 규격 구분 반영) */
+const CK=[
+  ['passport','여권 (유효기간 6개월 이상)'],
+  ['etix','항공권 e-티켓 · 호텔 바우처'],
+  ['pai','사전입국신고(PAI) QR 캡처'],
+  ['dutyfree','면세점에서 물건 찾기'],
+  ['bag','수하물 규격 확인 (가는 편: 트리니티 - 위탁 없음, 기내 10kg)'],
+  ['bag_vj','수하물 규격 확인 (오는 편: 비엣젯 - 위탁 20kg, 기내 7kg)'],
+  ['cash','환전 ($100 신권 위주)'],
+  ['esim','eSIM 신청·등록'],
+  ['pickup','공항 픽업 예약'],
+  ['grab','Grab 설치·카드 등록'],
+  ['ins','여행자보험'],
+  ['dam','담시장 쇼핑'],
+  ['lotte','롯데마트 쇼핑'],
+  ['rain','3단 우산·우비'],
+  ['jacket','바람막이'],
+  ['shoes','편한 샌들 / 운동화'],
+  ['temple','사원 방문 복장'],
+  ['swim','수영복'],
+  ['pb','보조배터리'],
+  ['med','상비약'],
+  ['bug','모기기피제'],
+  ['liq','액체류 지퍼백 및 지퍼백']
+];
+
 let ck=st.g('nt_chk')||{};
 $('#checklist').innerHTML=CK.map(c=>`<label class="ck${ck[c[0]]?' on':''}"><input type="checkbox" data-id="${c[0]}"${ck[c[0]]?' checked':''}><span>${c[1]}</span></label>`).join('');
 function updateCkProgress(){const done=CK.filter(c=>ck[c[0]]).length;$('#ckProgress').textContent='준비 완료 '+done+' / '+CK.length+'개'}
