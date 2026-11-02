@@ -66,6 +66,14 @@ td,th{border-bottom:1px solid #f1f5f9;padding:6px 4px;text-align:left;vertical-a
 .modal-overlay[hidden]{display:none}
 .modal-content{background:#fff;border-radius:16px;max-width:400px;width:100%;max-height:85vh;overflow-y:auto;padding:18px;position:relative}
 .modal-close{position:absolute;top:12px;right:12px;background:#f1f5f9;border:0;font-size:18px;width:32px;height:32px;border-radius:50%;cursor:pointer}
+
+/* 베트남어 회화 */
+.phrase-list{display:grid;gap:10px;margin-top:10px}
+.phrase{border:1px solid #e2e8f0;border-radius:12px;padding:12px;background:#fff}
+.phrase-vn{font-size:17px;font-weight:800;color:#0369a1}
+.phrase-ko{font-size:14px;font-weight:700;margin-top:2px}
+.phrase-meaning{font-size:12px;color:#64748b;margin-top:2px}
+.phrase .btn{margin-top:8px;padding:6px 12px}
 </style>
 </head>
 <body>
@@ -177,6 +185,10 @@ td,th{border-bottom:1px solid #f1f5f9;padding:6px 4px;text-align:left;vertical-a
   </div>
 </section>
 
+<section id="tab-viet" hidden>
+  <div class="card note"><h3>🇻🇳 현지 베트남어 회화</h3><p>문장 아래 한글은 베트남어 발음을 한국어로 적은 근사치예요. <b>🔊 듣기</b>를 누르면 기기에서 베트남어 음성으로 읽어줍니다. 음성이 안 나오면 기기 음성 설정에서 베트남어 음성을 설치하거나 활성화해 주세요.</p><p id="vietVoiceStatus" aria-live="polite"></p></div>
+  <div id="vietPhrases"></div>
+</section>
 <section id="tab-expense" hidden>
   <div class="card"><h3>🧾 여행 경비 정산 (2인)</h3><p>지출 항목과 금액, 결제자를 기록하면 균등 분담 기준 정산액을 계산합니다. 기록은 이 기기에 저장됩니다.</p><div class="calc-group"><div class="calc-row"><label>항목</label><input id="expName" type="text" placeholder="예: 저녁 식사"></div><div class="calc-row"><label>금액</label><input id="expAmount" type="number" min="0" step="1" placeholder="VND"></div><div class="calc-row"><label>결제자</label><select id="expPayer"><option value="현구">현구</option><option value="인섭">인섭</option></select><button class="btn" id="expAdd">추가</button></div></div><p id="expSummary" aria-live="polite">총 0 VND · 1인 부담 약 0 VND · 정산 완료</p><div id="expenseList"><p>아직 등록된 지출이 없습니다.</p></div><button class="btn" id="expClear">내역 모두 삭제</button></div>
 </section>
@@ -419,7 +431,63 @@ function renderExpenses(){const total=expenses.reduce((a,x)=>a+x.amount,0),paid=
 $('#expAdd').onclick=()=>{const name=$('#expName').value.trim(),amount=Number($('#expAmount').value);if(!name||!Number.isFinite(amount)||amount<=0){$('#expSummary').textContent='항목과 0보다 큰 금액을 입력하세요.';return}expenses.push({name,amount:Math.round(amount),payer:$('#expPayer').value});st.s('nt_exp',expenses);$('#expName').value='';$('#expAmount').value='';renderExpenses()};
 $('#expenseList').addEventListener('click',e=>{const b=e.target.closest('[data-del]');if(!b)return;expenses.splice(Number(b.dataset.del),1);st.s('nt_exp',expenses);renderExpenses()});$('#expClear').onclick=()=>{expenses=[];st.s('nt_exp',expenses);renderExpenses()};renderExpenses();
 
-const T=[['schedule','📅 일정'],['around','🏨 호텔주변'],['spa','💆 마사지'],['pack','✅ 준비물'],['shop','🏪 쇼핑'],['expense','🧾 경비'],['money','💳 환전'],['wx','🌤️ 날씨']];
+
+// 여행 중 바로 보여주거나 들려줄 수 있는 베트남어 회화
+const VI=[
+ {title:'✈️ 공항 · 픽업',items:[
+  ['Xin chào.','씬 짜오','안녕하세요.'],
+  ['Tôi có đặt xe.','또이 꼬 닷 쌔','차량을 예약했어요.'],
+  ['Tên đặt xe là [이름].','뗀 닷 쌔 라 [이름]','예약자 이름은 [이름]입니다.'],
+  ['Khách sạn Vinpearl Empire ở đâu?','칵 산 빈펄 엠파이어 어 더우?','빈펄 엠파이어 호텔은 어디인가요?']
+ ]},
+ {title:'🚕 이동 · 그랩',items:[
+  ['Làm ơn đưa tôi đến địa chỉ này.','람 언 드어 또이 덴 디어 찌 나이','이 주소로 데려다 주세요. (화면을 보여주세요)'],
+  ['Bao lâu thì đến nơi?','바오 러우 티 덴 너이?','도착까지 얼마나 걸리나요?'],
+  ['Cho tôi xuống ở đây.','쪼 또이 쑤옹 어 더이','여기서 내려 주세요.'],
+  ['Xin vui lòng bật đồng hồ tính tiền.','씬 부이 롱 벗 동 호 띤 띠엔','미터기를 켜 주세요.']
+ ]},
+ {title:'🍜 식당 · 카페',items:[
+  ['Cho tôi xem thực đơn.','쪼 또이 쌤 특 던','메뉴를 보여 주세요.'],
+  ['Cho tôi hai phần này.','쪼 또이 하이 펀 나이','이것 두 개 주세요.'],
+  ['Không cay, làm ơn.','콩 까이, 람 언','맵지 않게 해 주세요.'],
+  ['Không cho ngò, làm ơn.','콩 쪼 응어, 람 언','고수 넣지 말아 주세요. (쌀국수·음료 주문 시)'],
+  ['Không cho rau mùi (ngò), làm ơn.','콩 쪼 자우 무이 (응어), 람 언','고수를 포함한 향채를 빼 주세요.'],
+  ['Không cho đá.','콩 쪼 다','얼음을 넣지 말아 주세요.'],
+  ['Tính tiền, làm ơn.','띤 띠엔, 람 언','계산해 주세요.'],
+  ['Ngon lắm!','응온 람','정말 맛있어요!']
+ ]},
+ {title:'🛍️ 쇼핑 · 가격',items:[
+  ['Cái này bao nhiêu tiền?','까이 나이 바오 니에우 띠엔?','이거 얼마예요?'],
+  ['Đắt quá.','닥 꽈','너무 비싸요.'],
+  ['Giảm giá được không?','잠 자 더억 콩?','할인해 주실 수 있나요?'],
+  ['Tôi chỉ xem thôi.','또이 찌 쌤 토이','구경만 할게요.'],
+  ['Tôi lấy cái này.','또이 러이 까이 나이','이걸로 할게요.']
+ ]},
+ {title:'💆 마사지 · 안마',items:[
+  ['Mạnh hơn một chút, làm ơn.','마잉 헌 못 쭛, 람 언','조금 더 세게 해 주세요.'],
+  ['Nhẹ hơn một chút, làm ơn.','녜 헌 못 쭛, 람 언','조금 더 살살 해 주세요.'],
+  ['Nhẹ tay thôi, làm ơn.','녜 따이 토이, 람 언','손에 힘을 빼고 부드럽게 해 주세요.'],
+  ['Đau quá.','다우 꽈','너무 아파요.'],
+  ['Chỗ này đau.','쪼 나이 다우','여기가 아파요.'],
+  ['Dừng lại, làm ơn.','증 라이, 람 언','멈춰 주세요.'],
+  ['Tập trung vào vai / lưng / chân, làm ơn.','떱 쭝 바오 바이 / 르응 / 쩐, 람 언','어깨 / 등 / 다리 위주로 해 주세요.'],
+  ['Không cần dầu, làm ơn.','콩 껀 여우, 람 언','오일은 필요 없어요.']
+ ]},
+ {title:'🙏 부탁 · 도움',items:[
+  ['Bạn có nói tiếng Anh không?','반 꼬 노이 띠엥 아잉 콩?','영어 하실 수 있나요?'],
+  ['Bạn nói chậm hơn được không?','반 노이 쩜 헌 더억 콩?','조금 천천히 말씀해 주시겠어요?'],
+  ['Làm ơn giúp tôi.','람 언 줍 또이','도와주세요.'],
+  ['Tôi cần bác sĩ.','또이 껀 박 씨','의사가 필요해요.'],
+  ['Nhà vệ sinh ở đâu?','냐 베 씬 어 더우?','화장실이 어디예요?'],
+  ['Cảm ơn.','깜 언','감사합니다.'],
+  ['Không, cảm ơn.','콩, 깜 언','괜찮아요, 감사합니다.']
+ ]}
+];
+const vietRoot=$('#vietPhrases');
+vietRoot.innerHTML=VI.map((group,gi)=>'<div class="card"><h3>'+group.title+'</h3><div class="phrase-list">'+group.items.map((it,ii)=>'<article class="phrase"><div class="phrase-vn" lang="vi">'+it[0]+'</div><div class="phrase-ko">🔤 '+it[1]+'</div><div class="phrase-meaning">'+it[2]+'</div><button class="btn" type="button" data-viet="'+gi+'-'+ii+'" aria-label="베트남어로 듣기: '+it[2]+'">🔊 듣기</button></article>').join('')+'</div></div>').join('');
+vietRoot.addEventListener('click',e=>{const b=e.target.closest('[data-viet]');if(!b)return;const [gi,ii]=b.dataset.viet.split('-').map(Number);const text=VI[gi].items[ii][0];if(!('speechSynthesis' in window)||!('SpeechSynthesisUtterance' in window)){ $('#vietVoiceStatus').textContent='이 브라우저에서는 음성 재생을 지원하지 않아요. 베트남어 문장을 화면으로 보여주세요.';return}window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='vi-VN';u.rate=0.82;const voices=window.speechSynthesis.getVoices();const voice=voices.find(v=>v.lang.toLowerCase().startsWith('vi'));if(voice)u.voice=voice;else $('#vietVoiceStatus').textContent='기기에 베트남어 음성이 없을 수 있어요. 기본 음성으로 재생을 시도합니다.';u.onerror=()=>$('#vietVoiceStatus').textContent='베트남어 음성을 재생하지 못했어요. 기기 음성 설정에서 베트남어 음성을 설치해 주세요.';window.speechSynthesis.speak(u)});
+
+const T=[['schedule','📅 일정'],['around','🏨 호텔주변'],['spa','💆 마사지'],['pack','✅ 준비물'],['shop','🏪 쇼핑'],['viet','🇻🇳 베트남어'],['expense','🧾 경비'],['money','💳 환전'],['wx','🌤️ 날씨']];
 $('#nav').innerHTML=T.map(t=>`<button role="tab" data-t="${t[0]}">${t[1]}</button>`).join('');
 function show(id){if(!T.some(t=>t[0]===id))id='schedule';T.forEach(t=>{$('#tab-'+t[0]).hidden=t[0]!==id});document.querySelectorAll('#nav button').forEach(b=>b.setAttribute('aria-selected',b.dataset.t===id));if(location.hash!=='#'+id)history.replaceState(null,'','#'+id);scrollTo(0,0)}
 $('#nav').addEventListener('click',e=>{const b=e.target.closest('button');if(b)show(b.dataset.t)});
